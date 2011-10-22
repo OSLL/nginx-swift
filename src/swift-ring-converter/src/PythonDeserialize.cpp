@@ -124,6 +124,7 @@ void getIds(PyObject* idListList, std::vector<std::vector<size_t> >& lst) {
 
 using namespace boost;
 boost::shared_ptr<CRing> deserializeRing(const std::string& filePath) {
+	Py_Initialize();
 
 	PyObject* loadPickleFun = getPickleLoadFunction();
 
@@ -142,6 +143,9 @@ boost::shared_ptr<CRing> deserializeRing(const std::string& filePath) {
 
 	std::vector<std::vector<size_t> > lst;
 	getIds(PyObject_GetItem(dict, PyString_FromString("replica2part2dev_id")), lst);
+
+	PyErr_Print();
+	Py_Finalize();
 
 	shared_ptr<CRing> ptr(new CRing(devs, partShift,lst));
 	return ptr;
