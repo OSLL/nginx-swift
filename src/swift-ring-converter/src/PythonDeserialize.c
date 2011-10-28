@@ -7,8 +7,6 @@
  */
 
 #include <python2.6/Python.h>
-#include <iostream>
-
 #include "PythonDeserialize.h"
 
 /*!
@@ -16,7 +14,7 @@
  * \param filePath путь к файлу
  * \return при удаче объекть, иначе NULL
  */
-PyObject* getGzipFileObj(const std::string& filePath) {
+PyObject* getGzipFileObj(const char* filePath) {
 
 	PyObject* module;
 	module = PyImport_Import(PyString_FromString("gzip"));
@@ -29,7 +27,7 @@ PyObject* getGzipFileObj(const std::string& filePath) {
 
 	PyObject* arg;
 	arg = PyTuple_New(2);
-	PyTuple_SetItem(arg, 0, PyString_FromString(filePath.c_str()));
+	PyTuple_SetItem(arg, 0, PyString_FromString(filePath));
 	PyTuple_SetItem(arg, 1, PyString_FromString("rb"));
 
 	PyObject* instance = NULL;
@@ -69,10 +67,17 @@ PyObject* getPickleLoadFunction() {
 	return NULL;
 }
 
-void getDevs(PyObject* devList, CDeviceList& devs) {
+void getDevs(PyObject* devList, Ring* rng) {
+	rng->m_device = (Device*) malloc(sizeof(Device) * PyList_Size(devList));
+	if (!rng->m_device) {
+		printf("can't allocate memory!\n");
+		exit(1);
+	}
+	rng->m_devCount = PyList_Size(devList);
+
 	for (size_t n = 0; n < PyList_Size(devList); ++n) {
 		PyObject *item = PyList_GetItem(devList, n);
-		CDevice dev;
+		Device dev;
 		dev.m_id = PyInt_AsSsize_t(
 				PyObject_GetItem(item, PyString_FromString("id")));
 		dev.m_zone = PyInt_AsSsize_t(
@@ -80,22 +85,19 @@ void getDevs(PyObject* devList, CDeviceList& devs) {
 		dev.m_port = PyInt_AsSsize_t(
 				PyObject_GetItem(item, PyString_FromString("port")));
 
-		dev.m_ip = std::string(
-				PyString_AsString(
-						PyObject_GetItem(item, PyString_FromString("ip"))));
+		dev.m_ip = PyString_AsString(
+				PyObject_GetItem(item, PyString_FromString("ip")));
 
-		dev.m_device = std::string(
-				PyString_AsString(
-						PyObject_GetItem(item, PyString_FromString("device"))));
+		dev.m_device = PyString_AsString(
+				PyObject_GetItem(item, PyString_FromString("device")));
 
-		dev.m_meta = std::string(
-				PyString_AsString(
-						PyObject_GetItem(item, PyString_FromString("meta"))));
+		dev.m_meta = PyString_AsString(
+				PyObject_GetItem(item, PyString_FromString("meta")));
 
 		dev.m_weight = PyFloat_AsDouble(
 				PyObject_GetItem(item, PyString_FromString("weight")));
 
-		devs.push_back(dev);
+		rng->m_device[n] = dev;
 
 		Py_DECREF(item);
 
@@ -103,51 +105,65 @@ void getDevs(PyObject* devList, CDeviceList& devs) {
 	Py_DECREF(devList);
 }
 
-void getIds(PyObject* idListList, std::vector<std::vector<size_t> >& lst) {
-	std::vector<size_t> empty;
-	lst.assign(PyList_Size(idListList), empty);
+void getIds(PyObject* idListList, Ring* rng) {
+	rng->m_replicaCount = PyList_Size(idListList);
+	rng->m_replica2part2dev_id = (struct part2id*) malloc(
+			sizeof(struct part2id) * rng->m_replicaCount);
 
-	for (size_t i = 0; i < PyList_Size(idListList); ++i) {
-		PyObject* item=PyList_GetItem(idListList, i);
+	if (rng->m_replica2part2dev_id) {
+		for (uint64_t i = 0; i < rng->m_replicaCount; ++i) {
+			PyObject* item = PyList_GetItem(idListList, i);
+			rng->m_replica2part2dev_id[i].m_count = PySequence_Length(item);
 
-		lst[i].assign(PySequence_Length(item),0);
-		for(size_t j = 0; j<PySequence_Length(item); ++j){
-			lst[i][j] = PyInt_AsSsize_t(PySequence_GetItem(item, j));
+			rng->m_replica2part2dev_id[i].m_devId = (uint64_t*) malloc(
+					sizeof(uint64_t) * PySequence_Length(item));
+
+			if (rng->m_replica2part2dev_id[i].m_devId) {
+
+				for (size_t j = 0; j < rng->m_replica2part2dev_id[i].m_count;
+						++j) {
+					rng->m_replica2part2dev_id[i].m_devId[j] = PyInt_AsLong(
+							PySequence_GetItem(item, j));
+				}
+			} else {
+				printf("can't allocate memory!\n");
+				exit(1);
+			}
+
+			Py_DECREF(item);
 		}
-
-		Py_DECREF(item);
+	} else {
+		printf("can't allocate memory!\n");
+		exit(1);
 	}
 
 	Py_DECREF(idListList);
 
 }
 
-using namespace boost;
-boost::shared_ptr<CRing> deserializeRing(const std::string& filePath) {
+Ring deserializeRing(const char* filePath) {
 	Py_Initialize();
 
 	PyObject* loadPickleFun = getPickleLoadFunction();
 
 	PyObject* arg;
 	arg = PyTuple_New(1);
-	PyTuple_SetItem(arg, 0, getGzipFileObj(filePath.c_str()));
+	PyTuple_SetItem(arg, 0, getGzipFileObj(filePath));
 
 	PyObject* dict = PyObject_CallObject(loadPickleFun, arg);
 
-	CDeviceList devs;
+	Ring rng;
 
-	getDevs(PyObject_GetItem(dict, PyString_FromString("devs")), devs);
+	getDevs(PyObject_GetItem(dict, PyString_FromString("devs")), &rng);
 
-	size_t partShift = PyInt_AsSsize_t(
+	rng.m_partShift = PyInt_AsSsize_t(
 			PyObject_GetItem(dict, PyString_FromString("part_shift")));
 
-	std::vector<std::vector<size_t> > lst;
-	getIds(PyObject_GetItem(dict, PyString_FromString("replica2part2dev_id")), lst);
+	getIds(PyObject_GetItem(dict, PyString_FromString("replica2part2dev_id")),
+			&rng);
 
 	PyErr_Print();
 	Py_Finalize();
 
-	shared_ptr<CRing> ptr(new CRing(devs, partShift,lst));
-	return ptr;
+	return rng;
 }
-

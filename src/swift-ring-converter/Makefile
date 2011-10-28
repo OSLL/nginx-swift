@@ -1,22 +1,23 @@
-vpath %.cpp ./src
+vpath %.c ./src
 vpath %.h   ./inc
 
 TARGET=swift-ring-converter
 INC=-I./inc 
-CPPFLAG=-O2
-LD_LIB=-lpython2.6 -lboost_serialization -lboost_regex -lboost_iostreams
+CFLAG=-O2 -std=gnu99
+LD_LIB=-lpython2.6 -ltpl
+CC=gcc
 
-all: main.o Ring.o PythonDeserialize.o
-	g++ $(CPPFLAG) $(INC) main.o Ring.o PythonDeserialize.o $(LD_LIB) -o $(TARGET)
+all: main.o ring.o PythonDeserialize.o
+	$(CC) $(CFLAG) $(INC) main.o ring.o PythonDeserialize.o $(LD_LIB) -o $(TARGET)
 	
-main.o: main.cpp 
-	g++ $(CPPFLAG) $(INC) -Wno-deprecated -c ./src/main.cpp 
+main.o: main.c
+	$(CC) $(CFLAG) $(INC) -c ./src/main.c 
 
-Ring.o: Ring.cpp Ring.h
-	g++ $(CPPFLAG) $(INC) -c ./src/Ring.cpp
+ring.o: ring.c ring.h
+	$(CC) $(CFLAG) $(INC) -c ./src/ring.c
 	
-PythonDeserialize.o: PythonDeserialize.h PythonDeserialize.cpp
-	g++ $(CPPFLAG) $(INC) -c ./src/PythonDeserialize.cpp
+PythonDeserialize.o: PythonDeserialize.h PythonDeserialize.c
+	$(CC) $(CFLAG) $(INC) -c ./src/PythonDeserialize.c
 	
 	
 clean:

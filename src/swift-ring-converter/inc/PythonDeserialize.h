@@ -1,5 +1,5 @@
 /*!
- * PythonDeserialize.h
+ * pythonDeserialize.h
  *
  *  Created on: 15.10.2011
  *      Author: dmitriy
@@ -9,15 +9,14 @@
 #ifndef PYTHONDESERIALIZE_H_
 #define PYTHONDESERIALIZE_H_
 
-#include <boost/shared_ptr.hpp>
-#include "Ring.h"
+#include "ring.h"
 
 /*!
  * \brief Десериализация колька
  * \param filePath путь к файлу
  * \return указатель на колльцо
  */
-boost::shared_ptr<CRing> deserializeRing(const std::string& filePath);
+Ring deserializeRing(const char* filePath);
 
 
 #endif /* PYTHONDESERIALIZE_H_ */
