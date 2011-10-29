@@ -4,7 +4,7 @@ vpath %.h   ./inc
 TARGET=swift-ring-converter
 INC=-I./inc 
 CFLAG=-O2 -std=gnu99
-LD_LIB=-lpython2.6 -ltpl
+LD_LIB=-lpython2.6 -ltpl -lpcreposix -lpcre
 CC=gcc
 
 all: main.o ring.o PythonDeserialize.o
