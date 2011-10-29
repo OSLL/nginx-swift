@@ -6,7 +6,6 @@
  *	\todo комментировать
  */
 
-#include <python2.6/Python.h>
 #include "PythonDeserialize.h"
 
 /*!
@@ -142,7 +141,6 @@ void getIds(PyObject* idListList, Ring* rng) {
 }
 
 Ring deserializeRing(const char* filePath) {
-	Py_Initialize();
 
 	PyObject* loadPickleFun = getPickleLoadFunction();
 
@@ -163,7 +161,6 @@ Ring deserializeRing(const char* filePath) {
 			&rng);
 
 	PyErr_Print();
-	Py_Finalize();
 
 	return rng;
 }

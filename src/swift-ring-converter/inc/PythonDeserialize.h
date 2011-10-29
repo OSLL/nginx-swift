@@ -9,6 +9,7 @@
 #ifndef PYTHONDESERIALIZE_H_
 #define PYTHONDESERIALIZE_H_
 
+#include <python2.6/Python.h>
 #include "ring.h"
 
 /*!

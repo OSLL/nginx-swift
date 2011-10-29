@@ -16,7 +16,7 @@ void parseFileName(const char* inpStr, char* fileName) {
 	char *pattern = "(\\w+)\\.ring\\.gz";
 	regmatch_t p[20];
 	regex_t f;
-	if (regcomp(&f, pattern, 0)) /* если возвращаемое значение не 0 - ошибка */
+	if (regcomp(&f, pattern, 0))
 	{
 		printf("Error in pattern! %s\n", pattern);
 		exit(1);
@@ -33,6 +33,7 @@ void parseFileName(const char* inpStr, char* fileName) {
 }
 
 int main(int argc, char *argv[]) {
+	Py_Initialize();
 	char fileName[1024];
 
 	if (argc < 2) {
@@ -64,6 +65,7 @@ int main(int argc, char *argv[]) {
 	Ring rng = deserializeRing(fileName);
 	save(newName, &rng);
 	destroy(&rng);
+	Py_Finalize();
 	return 0;
 }
 
