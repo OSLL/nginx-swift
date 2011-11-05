@@ -1,0 +1,9 @@
+
+Compile NGINX
+./configure --add-module=/path/to/nginx-module
+
+Edit nginx.conf
+#add swift directive
+swift example{
+}
+
