@@ -152,6 +152,8 @@ Ring deserializeRing(const char* filePath) {
 
 	Ring rng;
 
+	ring_init(&rng);
+
 	getDevs(PyObject_GetItem(dict, PyString_FromString("devs")), &rng);
 
 	rng.m_partShift = PyInt_AsSsize_t(

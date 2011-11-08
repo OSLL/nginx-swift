@@ -30,9 +30,9 @@
 								<option defaultValue="gnu.c.optimization.level.most" id="gnu.c.compiler.exe.release.option.optimization.level.256001283" name="Optimization Level" superClass="gnu.c.compiler.exe.release.option.optimization.level" valueType="enumerated"/>
 								<option id="gnu.c.compiler.exe.release.option.debugging.level.146411316" name="Debug Level" superClass="gnu.c.compiler.exe.release.option.debugging.level" value="gnu.c.debugging.level.none" valueType="enumerated"/>
 								<option id="gnu.c.compiler.option.include.paths.1199514509" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
-									<listOptionValue builtIn="false" value="/home/dmitriy/openStackWS/nginx-1.0.8/src/core"/>
-									<listOptionValue builtIn="false" value="/home/dmitriy/openStackWS/nginx-1.0.8/src/http"/>
-									<listOptionValue builtIn="false" value="/home/dmitriy/openStackWS/nginx-1.0.8/src/event"/>
+									<listOptionValue builtIn="false" value="/home/dmitriy/openStackWS/nginx-1.0.9/src/core"/>
+									<listOptionValue builtIn="false" value="/home/dmitriy/openStackWS/nginx-1.0.9/src/http"/>
+									<listOptionValue builtIn="false" value="/home/dmitriy/openStackWS/nginx-1.0.9/src/event"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.911040573" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 							</tool>
@@ -44,7 +44,7 @@
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.cpp.linker.exe.release.1766748927" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.exe.release"/>
 							<tool id="cdt.managedbuild.tool.gnu.assembler.exe.release.1195854705" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.exe.release">
-								<option id="gnu.both.asm.option.include.paths.1141829560" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths" valueType="includePath"/>
+								<option id="gnu.both.asm.option.include.paths.1141829560" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths"/>
 								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.558704154" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
 							</tool>
 						</toolChain>

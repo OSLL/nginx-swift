@@ -40,19 +40,43 @@ typedef struct ring {
 	uint64_t m_replicaCount;
 } Ring;
 
+/*!
+ * \brief Инициализация
+ * \param rng кольцо
+ */
+void ring_init(Ring* rng);
 
 /*!
  * \brief Освобождение памяти
- * @param rng
+ * \param rng коллько
  */
 void destroy(Ring* rng);
 
+/*!
+ * \brief Загрузить из файла
+ * \param fileName путь к файлу
+ */
 Ring load(const char* const fileName);
 
+/*!
+ * \brief Сохранить в файл
+ * \param fileName имя файла
+ * \param rng кольцо
+ */
 void save(const char* const fileName, const Ring* rng);
 
+/*!
+ * \brief эквивалентность колец
+ * \param rnga кольцо
+ * \param rngb кольцо
+ * \return true если rnga == rngb
+ */
 bool equal(const Ring* rnga, const Ring* rngb);
 
+/*!
+ * \brief Печать информации о кольце
+ * \param rng кольцо
+ */
 void printRingInfo(const Ring* rng);
 
 #endif /* RING_H_ */
